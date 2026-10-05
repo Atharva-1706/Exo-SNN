@@ -1,0 +1,28 @@
+{
+  "n_total": 200,
+  "n_valid": 200,
+  "n_errors": 0,
+  "n_planets": 100,
+  "n_false_positives": 100,
+  "threshold": 0.5,
+  "accuracy": 0.635,
+  "precision": 0.651685393258427,
+  "recall": 0.58,
+  "f1": 0.6137566137566137,
+  "roc_auc": 0.7296,
+  "average_precision": 0.7463041687135044,
+  "mean_planet_score": 0.5452104312181473,
+  "mean_fp_score": 0.38828285329043866,
+  "median_planet_score": 0.6198251843452454,
+  "median_fp_score": 0.3539237976074219,
+  "confusion_matrix": [
+    [
+      69,
+      31
+    ],
+    [
+      42,
+      58
+    ]
+  ]
+}
