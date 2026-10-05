@@ -14,7 +14,7 @@ from root.detection.dual_stream import extract_dual_views
 from root.classification.tri_branch_ensemble import TriBranchTESSNet
 from root.classification.xai import compute_1d_gradcam
 from root.classification.physical_verification import verify_astrophysics
-from root.reporting.pdf_report import generate_vetting_report
+from root.reporting.vetting_report import generate_vetting_report
 from root.status import DEFAULT_MIN_BLS_SNR, derive_overall_status
 
 # A light curve with fewer valid cadences than this cannot support a BLS
