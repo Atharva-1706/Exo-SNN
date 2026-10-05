@@ -327,7 +327,7 @@ st.divider()
 # ----------------------------------------------------------------------
 st.markdown("**Report & Output**")
 if st.button("Generate Vetting Report Image"):
-    from root.reporting.pdf_report import generate_vetting_report
+    from root.reporting.vetting_report import generate_vetting_report
     with st.spinner("Compiling report..."):
         report_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports", f"{result.get('target_id', 'target')}_report.png")
         generate_vetting_report(
