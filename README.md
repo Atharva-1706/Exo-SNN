@@ -1,11 +1,8 @@
 # Exo-SNN
-<<<<<<< HEAD
 AI-enabled Detection of Exoplanets from Noisy Astronomical Light Curves 
 
 
 # Exo-SNN
-=======
->>>>>>> 3c3a5c3 (vetting report generator modified)
 
 **AI-enabled detection and vetting of exoplanet transit candidates in noisy TESS light curves.**
 
@@ -575,7 +572,3 @@ Use `python -m streamlit run root/ux/dashboard.py` (as above) so the interpreter
 
 ## License
 
-<<<<<<< HEAD
-=======
-No license file is included with this distribution. Add one (for example MIT or Apache-2.0) before sharing or publishing the repository.
->>>>>>> 3c3a5c3 (vetting report generator modified)
