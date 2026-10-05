@@ -2,7 +2,7 @@
 AI-enabled Detection of Exoplanets from Noisy Astronomical Light Curves 
 
 
-# ExoSNN v11.1 — TESS Exoplanet Candidate Detection and Vetting
+# ExoSNN v1 — TESS Exoplanet Candidate Detection and Vetting
 
 An end-to-end AI-assisted pipeline for detecting, classifying, explaining, and astrophysically vetting transit-like signals in NASA TESS light curves.
 
