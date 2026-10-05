@@ -2,128 +2,119 @@
 AI-enabled Detection of Exoplanets from Noisy Astronomical Light Curves 
 
 
-# ExoSNN v1 — TESS Exoplanet Candidate Detection and Vetting
+Astro: TESS Exoplanet Detection & Vetting Pipeline
 
-An end-to-end AI-assisted pipeline for detecting, classifying, explaining, and astrophysically vetting transit-like signals in NASA TESS light curves.
+An automated, end-to-end machine learning pipeline for discovering, classifying, and vetting exoplanet candidates from NASA's TESS (Transiting Exoplanet Survey Satellite) mission light curves.
 
-The system combines **Box Least Squares (BLS) detection**, a **three-branch neural architecture**, **Spiking Neural Network (SNN) temporal analysis**, **Grad-CAM explainability**, and independent astrophysical validation checks to distinguish promising planetary transit candidates from false positives and unreliable detections.
+This project integrates traditional astronomical detection methods (like Box-fitting Least Squares - BLS) with a cutting-edge Tri-Branch Ensemble classification system, featuring Spiking Neural Networks (SNNs) and Explainable AI (XAI) to provide physical verification of transit signals.
 
-> **Important:** ExoSNN is a candidate detection and vetting system. Its AI confidence or final pipeline status must not be interpreted as formal exoplanet confirmation.
+🌟 Key Features
 
----
+Data Ingestion & Synthesis: Automated downloading of TESS Full Frame Image (FFI) light curves from the MAST archive, coupled with synthetic data generation for robust model training.
 
-## Table of Contents
+Dual-Stream Detection: Utilizes standard BLS (Box-fitting Least Squares) alongside custom detection algorithms to identify periodic dips in stellar brightness.
 
-- [Overview](#overview)
-- [Key Results](#key-results)
-- [Scientific Motivation](#scientific-motivation)
-- [Pipeline Architecture](#pipeline-architecture)
-- [Pipeline Workflow](#pipeline-workflow)
-- [1. TESS Data Acquisition](#1-tess-data-acquisition)
-- [2. Light Curve Preprocessing](#2-light-curve-preprocessing)
-- [3. BLS Transit Detection](#3-bls-transit-detection)
-- [4. Phase Folding](#4-phase-folding)
-- [5. Three-Branch Neural Classifier](#5-three-branch-neural-classifier)
-- [6. Synthetic Pretraining](#6-synthetic-pretraining)
-- [7. Real-TESS Fine-Tuning](#7-real-tess-fine-tuning)
-- [8. Physical Vetting](#8-physical-vetting)
-- [9. Explainable AI](#9-explainable-ai)
-- [10. Conservative Status Logic](#10-conservative-status-logic)
-- [False-Positive Rejection](#false-positive-rejection)
-- [Odd-Even Transit Test](#odd-even-transit-test)
-- [Eclipsing Binary Detection](#eclipsing-binary-detection)
-- [Boundary-Peak Detection](#boundary-peak-detection)
-- [Transit-Count Validation](#transit-count-validation)
-- [Example Candidates](#example-candidates)
-- [Evaluation](#evaluation)
-- [Confusion Matrix](#confusion-matrix)
-- [Project Structure](#project-structure)
-- [Important Files](#important-files)
-- [Installation](#installation)
-- [Running the Project](#running-the-project)
-- [Running the Dashboard](#running-the-dashboard)
-- [Running a Specific TESS Target](#running-a-specific-tess-target)
-- [Training](#training)
-- [Benchmarking](#benchmarking)
-- [Unseen Evaluation](#unseen-evaluation)
-- [Data Sources](#data-sources)
-- [Model Checkpoint](#model-checkpoint)
-- [Reproducibility](#reproducibility)
-- [Limitations](#limitations)
-- [Scientific Interpretation](#scientific-interpretation)
-- [Future Improvements](#future-improvements)
-- [References](#references)
-- [Disclaimer](#disclaimer)
-- [Project Status](#project-status)
+Tri-Branch Ensemble Classification: A powerful composite model architecture that includes:
 
----
+SNN Branch: Spiking Neural Networks for temporally-aware pattern recognition.
 
-# Overview
+Feature Extraction: Deep feature analysis of transit shapes.
 
-**ExoSNN v11.1** is an AI-assisted astronomical pipeline designed to analyze noisy stellar light curves from NASA's **Transiting Exoplanet Survey Satellite (TESS)**.
+Delta Modulation: Signal encoding for high-fidelity anomaly detection.
 
-The fundamental problem is that a planetary transit can appear as a very small decrease in stellar brightness. Real astronomical observations also contain:
+Physical Verification & XAI: Ensures that detected candidates physically make sense as exoplanets and provides Explainable AI metrics to interpret the neural network's decisions.
 
-- Instrumental noise
-- Stellar variability
-- Data gaps
-- Detrending artifacts
-- Cosmic-ray contamination
-- Isolated dips
-- Eclipsing binaries
-- Periodic stellar phenomena
-- Insufficient numbers of observed transits
+Automated Vetting Reports: Generates comprehensive visual reports (PNG/PDF) for individual TESS Input Catalog (TIC) targets.
 
-Consequently, a high signal-to-noise ratio alone is not sufficient to establish that a detected signal is planetary.
+Interactive UX Dashboard: A Streamlit-based web application to interactively explore light curves, run the pipeline, and view vetting reports.
 
-ExoSNN therefore uses multiple independent stages:
+📁 Project Structure
 
-```text
-TESS Light Curve
-       |
-       v
-Data Cleaning & Detrending
-       |
-       v
-BLS Period Search
-       |
-       v
-Candidate Period Selection
-       |
-       v
-Global + Local Phase Folding
-       |
-       +---------------------------+
-       |                           |
-       v                           v
-Global CNN                   Local CNN
-       |                           |
-       +-------------+-------------+
-                     |
-                     v
-              SNN Temporal Branch
-                     |
-                     v
-              Neural Ensemble
-                     |
-                     v
-             AI Morphology Score
-                     |
-                     v
-       +-----------------------------+
-       | Independent Physical Vetting|
-       +-----------------------------+
-          |      |       |       |
-          v      v       v       v
-       Transit Odd-Even Secondary BLS
-       Count   Test     Eclipse   Quality
-          \      |       |       /
-           \     |       |      /
-            +----+-------+-----+
-                     |
-                     v
-            Conservative Status
-                     |
-                     v
-             Final Candidate
-                Assessment
+astro/
+├── mastDownload/          # Downloaded TESS FITS files and light curves
+├── root/
+│   ├── benchmark_results/ # Output metrics and CSVs from model benchmarking
+│   ├── classification/    # Core ML models (SNN, Tri-branch, XAI, Verification)
+│   ├── data/              # Ingestion scripts and synthetic data generators
+│   ├── detection/         # Transit search algorithms (BLS, Dual-Stream)
+│   ├── real_data_cache/   # Cached NPZ files of processed TIC targets
+│   ├── reporting/         # Automated vetting report generators
+│   ├── reports/           # Generated output reports (PNGs)
+│   ├── unseen_evaluation_200/ # Manifests and metrics for unseen target validation
+│   ├── ux/                # User Interface code
+│   │   └── dashboard.py   # Main Streamlit dashboard application
+│   ├── weights/           # Pre-trained PyTorch model weights (.pt files)
+│   ├── main_pipeline.py   # End-to-end execution script
+│   ├── train_real.py      # Script for training models on real TESS data
+│   ├── train_all.py       # Script for training on composite datasets
+│   ├── evaluate_real.py   # Evaluation scripts for real data
+│   ├── evaluate_unseen.py # Evaluation scripts for unseen validation sets
+│   └── Requirements.txt   # Python package dependencies
+
+
+🚀 Installation
+
+Clone the repository:
+
+git clone <repository-url>
+cd astro
+
+
+Set up a virtual environment (recommended):
+
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+
+
+Install the dependencies:
+
+pip install -r root/Requirements.txt
+
+
+🖥️ Usage
+
+Running the Interactive Dashboard
+
+The easiest way to explore the data and model results is through the interactive Streamlit dashboard. To launch the UX, run the following command from the project root:
+
+python -m streamlit run root/ux/dashboard.py 
+
+
+This will open the dashboard in your default web browser, usually at http://localhost:8501.
+
+Running the Pipeline via CLI
+
+You can also run specific parts of the pipeline directly from the command line:
+
+1. Run the full detection and classification pipeline:
+
+python root/main_pipeline.py
+
+
+2. Train the Tri-Branch Network:
+
+# Train on real cached data
+python root/train_real.py
+
+# Train on all data (including synthetic)
+python root/train_all.py
+
+
+3. Evaluate the Model:
+
+# Evaluate on real benchmarking targets
+python root/evaluate_real.py
+
+# Evaluate against the unseen 200 validation set
+python root/evaluate_unseen.py
+
+
+📊 Data Management
+
+MAST Downloads: The pipeline automatically stores raw TESS data inside the mastDownload/HLSP/ directory.
+
+Caching: To speed up processing, extracted and normalized light curves are cached as .npz files in root/real_data_cache/ (e.g., TIC_127315102_S11.npz).
+
+🧠 Pre-trained Models
+
+Pre-trained weights for the Tri-Branch SNN ensemble are included in the repository. They are located in root/weights/. The pipeline will automatically load tri_branch_tess_net_pretrained.pt during inference if training from scratch is not specified.
