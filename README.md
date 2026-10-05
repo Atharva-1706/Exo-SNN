@@ -572,4 +572,3 @@ Use `python -m streamlit run root/ux/dashboard.py` (as above) so the interpreter
 
 ## License
 
-No license file is included with this distribution. Add one (for example MIT or Apache-2.0) before sharing or publishing the repository.
